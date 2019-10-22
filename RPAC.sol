@@ -37,15 +37,7 @@ contract Roles {
   mapping ( uint256 => Role) roledescription2role;
   Role[] public roles;
   
-  
-   /* List of permissions assign an to a specific address
-    * Permissions are Create Read Update Erase
-    * @ accountAddress is the address of associated to a Role 1:1 relation
-    * @ Permission_name is an array of strings that contains any of the [(N)(N)] permissions where N = 4
-    * @ isAssigned to verify if and accountAddress has Permission assigned to itself
-    * permissionpointerlist reference of the position of an element in unordered list
-   */
-
+    
      
   /* @notice The contract constructor, empty as of now.
    *
@@ -213,6 +205,14 @@ contract Permissions {
         if(permissionlist.length == 0) return false;
         return (accounts2permission[_accountAddress].isAssigned);
     }
+
+ /* List of permissions assign an to a specific address
+    * Permissions are Create Read Update Erase
+    * @ accountAddress is the address of associated to a Role 1:1 relation
+    * @ Permission_name is an array of strings that contains any of the [(N)(N)] permissions where N = 4
+    * @ isAssigned to verify if and accountAddress has Permission assigned to itself
+    * permissionpointerlist reference of the position of an element in unordered list
+   */
 
   function getCountpermissionlist () public view returns (uint entityCount)
     {
