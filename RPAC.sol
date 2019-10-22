@@ -8,18 +8,16 @@ pragma experimental ABIEncoderV2;
 * @author Mauricio Fernandez 
 * It's an extended contract of Alberto Cuesta Cañada RBAC smartcontract
 * https://hackernoon.com/role-based-access-control-for-the-ethereum-blockchain-bcc9dfbcfe5c
-* permissions will be assigned to a address 
+* permissions will be assigned to an address 
 * @notice Implements runtime configurable  Role & Permission Access Control.
 */
 
-contract RPAC {
+contract Roles {
   
   event RoleCreated(uint256 role);
   event AuthorisationCreated (address account, uint256 role );
   event BearerAdded(address account, uint256 role);
   event BearerRemoved(address account, uint256 role);
-  event PermissionSet ( address accountAddress, string[] permission_name);
-  event PermissionDelete ( address accountAddress );
   uint256 constant NO_ROLE = 0;
   
   /**
@@ -48,73 +46,15 @@ contract RPAC {
     * permissionpointerlist reference of the position of an element in unordered list
    */
 
-   struct Permission {
-       address accountAddress;
-       string [] permission_name;
-       bool isAssigned;
-       uint256 permissionpointerlist;
-    }
-  
-  mapping ( address => Permission) accounts2permission ; 
-  address [] public permissionlist;
-  
+     
   /* @notice The contract constructor, empty as of now.
    *
   */  
    constructor() public {
-   addRootRole("NO_ROLE");
-   }
-  
+    addRootRole("NO_ROLE");
    
-  
-  function isassigned (address _accountAddress) public view returns (bool indeed)
-  {
-    if(permissionlist.length == 0) return false;
-    return (accounts2permission[_accountAddress].isAssigned);
-  }
-
-  function getCountpermissionlist () public view returns (uint entityCount)
-  {
-    return permissionlist.length;
-  }
-
-  function newPermissionset (address _accountAddress, string [] memory _permission_name) public returns(bool success)
-  {
-    if(isassigned(_accountAddress)) revert ("address alreaddy exist");
-    accounts2permission[_accountAddress].accountAddress = _accountAddress;
-    accounts2permission[_accountAddress].permission_name = _permission_name;
-    accounts2permission[_accountAddress].isAssigned = true;
-    accounts2permission[_accountAddress].permissionpointerlist = permissionlist.push(_accountAddress);
-    emit PermissionSet (_accountAddress, _permission_name);
-    return true;
-  }
-
-  function updatePermissions (address _accountAddress, string[] memory _permission_name ) public returns(bool success )
-  {
-    if(!isassigned(_accountAddress)) revert ();
-    accounts2permission[_accountAddress].accountAddress = _accountAddress;
-    accounts2permission[_accountAddress].permission_name = _permission_name;
-    emit PermissionSet ( _accountAddress, _permission_name);
-    return true;
-  }
-  
-     function retrieveaccountpermissions (address _accountAddress) public view returns (string[] memory, bool success)
-  {
-     if(!isassigned(_accountAddress)) revert ();
-     return (accounts2permission[_accountAddress].permission_name, true);
-  }
-  
-   function deletePermission (address _accountAddress) public returns(bool success) {
-    if(!isassigned(_accountAddress)) revert ();
-    uint256 rowToDelete = accounts2permission[_accountAddress].permissionpointerlist;
-    address keyToMove = permissionlist[permissionlist.length-1];
-    permissionlist[rowToDelete] = keyToMove;
-    accounts2permission[keyToMove].permissionpointerlist = rowToDelete;
-    permissionlist.length--;
-    emit PermissionDelete ( _accountAddress);
-    return true;
-  }
-  
+   }
+   
    /**
    * @notice Create a new role that has itself as an admin. 
    * msg.sender is added as a bearer.
@@ -123,8 +63,8 @@ contract RPAC {
    */
    
   function addRootRole(string memory _roleDescription) 
-  public 
-  returns(uint256)
+    public 
+    returns(uint256)
   {
     uint256 role = addRole(_roleDescription, roles.length);
     roles[role].bearers[msg.sender] = true;
@@ -162,7 +102,7 @@ contract RPAC {
   function totalRoles() public  view
     returns(uint256)
   {
-    return roles.length;
+    return roles.length -1;
   }
 
   
@@ -177,16 +117,16 @@ contract RPAC {
     public
     view
     returns(bool)
-  {
-    return _role < roles.length && roles[_role].bearers[_account];
-  }
- 
- function eraseRoles () public returns(bool success) {
-     delete roles;
-     roles.length = 0;
-    return true;
-    
+    {
+        return _role < roles.length && roles[_role].bearers[_account];
     }
+ 
+ function eraseRoles () public returns(bool success) 
+    {
+     delete roles;
+     roles.push(Role({description: "No Role", admin: 0}));
+     return true;
+    }    
 
 
   /**
@@ -197,7 +137,7 @@ contract RPAC {
   
   function addBearer(address _account, uint256 _role)
     public
-  {
+   {
     require(
       _role < roles.length,
       "Role doesn't exist."
@@ -212,7 +152,7 @@ contract RPAC {
     );
     roles[_role].bearers[_account] = true;
     emit BearerAdded(_account, _role);
-  }
+   }
   
   /**
    * @notice A method to remove a bearer from a role
@@ -222,7 +162,7 @@ contract RPAC {
   
   function removeBearer(address _account, uint256 _role)
     public
-  {
+   {
     require(
       _role < roles.length,
       "Role doesn't exist."
@@ -237,6 +177,92 @@ contract RPAC {
     );
     delete roles[_role].bearers[_account];
     emit BearerRemoved(_account, _role);
+   }
+}   
+
+/**
+* @title RPAC
+* @author Mauricio Fernandez 
+* This is a new contract for Permissions assigned to an address
+* The Role's owner (bearer address) assigns a role to a new address
+* The address is granted access rights based on CRED Permissions
+*/
+
+
+contract Permissions {
+
+  event PermissionSet ( address accountAddress, string[] permission_name);
+  event PermissionDelete ( address accountAddress );
+  
+   struct Permission {
+       address accountAddress;
+       string [] permission_name;
+       bool isAssigned;
+       uint256 permissionpointerlist;
+    }
+
+  mapping ( address => Permission) accounts2permission ; 
+  address [] public permissionlist;
+  
+  constructor () public   {
+      isassigned (address(msg.sender));
   }
-}
+  
+  function isassigned (address _accountAddress) public view returns (bool indeed)
+    {
+        if(permissionlist.length == 0) return false;
+        return (accounts2permission[_accountAddress].isAssigned);
+    }
+
+  function getCountpermissionlist () public view returns (uint entityCount)
+    {
+        return permissionlist.length;
+    }
+
+  function newPermissionset (address _accountAddress, string [] memory _permission_name) public returns(bool success)
+    {
+        if(isassigned(_accountAddress)) revert ("address alreaddy exist");
+        accounts2permission[_accountAddress].accountAddress = _accountAddress;
+        accounts2permission[_accountAddress].permission_name = _permission_name;
+        accounts2permission[_accountAddress].isAssigned = true;
+        accounts2permission[_accountAddress].permissionpointerlist = permissionlist.push(_accountAddress);
+        emit PermissionSet (_accountAddress, _permission_name);
+        return true;
+    }
+
+  function updatePermissions (address _accountAddress, string[] memory _permission_name ) public returns(bool success )
+    {
+        if(!isassigned(_accountAddress)) revert ();
+        accounts2permission[_accountAddress].accountAddress = _accountAddress;
+        accounts2permission[_accountAddress].permission_name = _permission_name;
+        emit PermissionSet ( _accountAddress, _permission_name);
+        return true;
+    }
+  
+    
+   function retrieveaccountpermissions (address _accountAddress) public view returns (string[] memory, bool success)
+    {
+        if(!isassigned(_accountAddress)) revert ();
+        return (accounts2permission[_accountAddress].permission_name, true);
+    }
+
+   function deletePermission (address _accountAddress) public returns(bool success) 
+        {
+            if(!isassigned(_accountAddress)) revert ();
+            uint256 rowToDelete = accounts2permission[_accountAddress].permissionpointerlist;
+            address keyToMove = permissionlist[permissionlist.length-1];
+            permissionlist[rowToDelete] = keyToMove;
+            accounts2permission[keyToMove].permissionpointerlist = rowToDelete;
+            permissionlist.length--;
+            emit PermissionDelete ( _accountAddress);
+            return true;
+        }
+}   
+     
+   
+   
+
+
+
+
 
