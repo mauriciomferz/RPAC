@@ -263,12 +263,13 @@ contract Permissions {
    
 contract Accounts2Roles is Roles,Permissions {
     
-    // _Roleid this arguments takes the RoleId created in contract Roles
+    // _Roleid this argument takes the RoleId created in the Roles contract 
     // _Accountaddrress this argument takes an address
-    // verify if  the account isassigned from contract Permissions
-    // Verify the Roleid has a bearer from contract Roles
+    // verify if an address isassigned from the Permissions contract
+    // Verify the Roleid has a bearer from the Roles contract
     // Make the link beteween RoleId and the address
-    // Store the links in an array of  RolesId to Address(es)
+    // Store the links in an array of RolesId to address(es)
+    
     mapping (address => uint256) permission2roleid;
     uint256[] arrayofrolesid;
     
