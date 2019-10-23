@@ -286,9 +286,47 @@ contract Accounts2Roles is Roles,Permissions {
     return true;
     }
   
+  // This contrat uses a Struct 
+  
+  // contract Accounts2Roles is Roles,Permissions {
+    
+    // This struct only has two Types
+    // permission2roleid 
+    // pointertolastitem
+    
+    //struct Acct2RoleID {
+    //        mapping (address => uint256) permission2roleid;
+    //        uint256  pointertolastitem;
+    //}
+    
+    // simplestruct a struct of Acct2RoleID
+    //Acct2RoleID simplestruct;
+    
+    // simple array
+    // uint256 [] acct2roleid;
+    
+       
+    // _Roleid this arguments takes the RoleId created in contract Roles
+    // _Accountaddrress this argument takes an address
+    // verify if  the account isassigned from contract Permissions
+    // Verify the Roleid has a bearer from contract Roles
+    // Make the link beteween RoleId and the address
+    // Store the links in an array of  RolesId to Address(es)
+    
+    
+    // function linkage (uint256 _RoleId, address _accountAddress) public
+    // returns (bool success)
+    // {
+        
+    //    if (isassigned(_accountAddress) != true) revert ("Address does not have permissions yet!");
+        
+    //    if (hasRole(_accountAddress,_RoleId) != true ) revert ("Address does not belong to this RoleId");
+        
+    //       simplestruct.permission2roleid[_accountAddress] = _RoleId;
+    //       simplestruct.pointertolastitem = acct2roleid.push(_RoleId) ;
+           
+           //emit ()
+    //return true;
+    //}
+  
 }
-
-
-
-
-
