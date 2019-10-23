@@ -261,7 +261,7 @@ contract Permissions {
 }   
      
    
-contract accounts2Roles is Roles,Permissions {
+contract Accounts2Roles is Roles,Permissions {
     
     // _Roleid this arguments takes the RoleId created in contract Roles
     // _Accountaddrress this argument takes an address
