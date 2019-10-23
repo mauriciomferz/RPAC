@@ -34,16 +34,15 @@ contract Roles {
     uint256 admin;
     mapping (address => bool) bearers;
   } 
-  mapping ( uint256 => Role) roledescription2role;
+ 
+  
   Role[] public roles;
   
-    
-     
   /* @notice The contract constructor, empty as of now.
    *
-  */  
+   */  
    constructor() public {
-    addRootRole("NO_ROLE");
+   addRootRole("NO_ROLE");
    
    }
    
@@ -70,20 +69,18 @@ contract Roles {
    * bearers from the role being created.
    * @return The role id.
    */
-   
+  
+  
   function addRole(string memory _roleDescription, uint256 _admin)
-    public
-    returns(uint256)
+    public 
+    returns (uint256)
   {
     require(_admin <= roles.length, "Admin role doesn't exist.");
-    uint256 role = roles.push(
-      Role({
-        description: _roleDescription,
-        admin: _admin
-        })
-    ) - 1;
-    emit RoleCreated(role);
+     uint256 role = roles.push(Role({ description: _roleDescription, admin: _admin})) - 1;
+      // Initiliase the Permission contract.
     return role;
+    
+   
   }
   /**
    * @notice Retrieve the number of roles in the contract.
@@ -108,15 +105,17 @@ contract Roles {
   function hasRole(address _account, uint256 _role)
     public
     view
-    returns(bool)
+    returns(bool )
     {
-        return _role < roles.length && roles[_role].bearers[_account];
+     return _role < roles.length && roles[_role].bearers[_account];
+        
     }
  
- function eraseRoles () public returns(bool success) 
+  function eraseRoles () public returns(bool) 
     {
      delete roles;
      roles.push(Role({description: "No Role", admin: 0}));
+     delete roles[0].bearers[msg.sender];
      return true;
     }    
 
@@ -196,30 +195,33 @@ contract Permissions {
   mapping ( address => Permission) accounts2permission ; 
   address [] public permissionlist;
   
-  constructor () public   {
-      isassigned (address(msg.sender));
-  }
+  //address admin;
+  //constructor () public 
+  //{
+  //  admin = msg.sender;
+  //  isassigned (admin);
+  // }
   
-  function isassigned (address _accountAddress) public view returns (bool indeed)
+  function isassigned (address _accountAddress) public view returns (bool)
     {
         if(permissionlist.length == 0) return false;
         return (accounts2permission[_accountAddress].isAssigned);
     }
 
- /* List of permissions assign an to a specific address
+    /* List of permissions assign an to a specific address
     * Permissions are Create Read Update Erase
     * @ accountAddress is the address of associated to a Role 1:1 relation
     * @ Permission_name is an array of strings that contains any of the [(N)(N)] permissions where N = 4
     * @ isAssigned to verify if and accountAddress has Permission assigned to itself
     * permissionpointerlist reference of the position of an element in unordered list
-   */
-
-  function getCountpermissionlist () public view returns (uint entityCount)
+    */
+    
+ function getCountpermissionlist () public view returns (uint entityCount)
     {
         return permissionlist.length;
     }
 
-  function newPermissionset (address _accountAddress, string [] memory _permission_name) public returns(bool success)
+ function newPermissionset (address _accountAddress, string [] memory _permission_name) public returns(bool)
     {
         if(isassigned(_accountAddress)) revert ("address alreaddy exist");
         accounts2permission[_accountAddress].accountAddress = _accountAddress;
@@ -230,7 +232,7 @@ contract Permissions {
         return true;
     }
 
-  function updatePermissions (address _accountAddress, string[] memory _permission_name ) public returns(bool success )
+ function updatePermissions (address _accountAddress, string[] memory _permission_name ) public returns(bool)
     {
         if(!isassigned(_accountAddress)) revert ();
         accounts2permission[_accountAddress].accountAddress = _accountAddress;
@@ -240,13 +242,12 @@ contract Permissions {
     }
   
     
-   function retrieveaccountpermissions (address _accountAddress) public view returns (string[] memory, bool success)
-    {
+ function retrieveaccountpermissions (address _accountAddress) public view returns (string[] memory, bool)    {
         if(!isassigned(_accountAddress)) revert ();
         return (accounts2permission[_accountAddress].permission_name, true);
     }
 
-   function deletePermission (address _accountAddress) public returns(bool success) 
+ function deletePermission (address _accountAddress) external returns(bool) 
         {
             if(!isassigned(_accountAddress)) revert ();
             uint256 rowToDelete = accounts2permission[_accountAddress].permissionpointerlist;
@@ -260,7 +261,31 @@ contract Permissions {
 }   
      
    
-   
+contract accounts2Roles is Roles,Permissions {
+    
+    // _Roleid this arguments takes the RoleId created in contract Roles
+    // _Accountaddrress this argument takes an address
+    // verify if  the account isassigned from contract Permissions
+    // Verify the Roleid has a bearer from contract Roles
+    // Make the link beteween RoleId and the address
+    // Store the links in an array of  RolesId to Address(es)
+    mapping (address => uint256) permission2roleid;
+    uint256[] arrayofrolesid;
+    
+    function linkage (uint256 _RoleId, address _accountAddress) public
+    returns (bool success)
+    {
+        
+        if (isassigned(_accountAddress) != true) revert ("Address does not have permissions yet!");
+        
+        if (hasRole(_accountAddress,_RoleId) != true ) revert ("Address does not belong to this RoleId");
+           permission2roleid[_accountAddress]= _RoleId;
+           arrayofrolesid.push(permission2roleid[_accountAddress]);
+           //emit ()
+    return true;
+    }
+  
+}
 
 
 
