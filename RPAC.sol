@@ -260,73 +260,59 @@ contract Permissions {
         }
 }   
      
-   
-contract Accounts2Roles is Roles,Permissions {
+ontract Addresses2Roles is Roles,Permissions {
     
-    // _Roleid this argument takes the RoleId created in the Roles contract 
-    // _Accountaddrress this argument takes an address
-    // verify if an address isassigned from the Permissions contract
-    // Verify the Roleid has a bearer from the Roles contract
-    // Make the link beteween RoleId and the address
-    // Store the links in an array of RolesId to address(es)
+    // This struct only has only one Type
+    // ridentfier is an array of integeres related to RoleId
+    // it allows to assign one or more rolesId to a single adddress 
+    // e.g address 0x0A may have one or more roles -> roleId = 1 , roleId= 2, roleId = 3
     
-    mapping (address => uint256) permission2roleid;
-    uint256[] arrayofrolesid;
     
-    function linkage (uint256 _RoleId, address _accountAddress) public
-    returns (bool success)
-    {
-        
-        if (isassigned(_accountAddress) != true) revert ("Address does not have permissions yet!");
-        
-        if (hasRole(_accountAddress,_RoleId) != true ) revert ("Address does not belong to this RoleId");
-           permission2roleid[_accountAddress]= _RoleId;
-           arrayofrolesid.push(permission2roleid[_accountAddress]);
-           //emit ()
-    return true;
+    struct Linking {
+            uint256[] ridentifier;
     }
-  
-  // This contrat uses a Struct 
-  
-  // contract Accounts2Roles is Roles,Permissions {
     
-    // This struct only has two Types
-    // permission2roleid 
-    // pointertolastitem
+    // Public array of Struct Acct2RoleID;
+    mapping (address => Linking) struct_linking;
     
-    //struct Acct2RoleID {
-    //        mapping (address => uint256) permission2roleid;
-    //        uint256  pointertolastitem;
-    //}
-    
-    // simplestruct a struct of Acct2RoleID
-    //Acct2RoleID simplestruct;
-    
-    // simple array
-    // uint256 [] acct2roleid;
-    
-       
+
     // _Roleid this arguments takes the RoleId created in contract Roles
     // _Accountaddrress this argument takes an address
-    // verify if  the account isassigned from contract Permissions
+    // verify if the account isassigned from contract Permissions
     // Verify the Roleid has a bearer from contract Roles
     // Make the link beteween RoleId and the address
     // Store the links in an array of  RolesId to Address(es)
     
     
-    // function linkage (uint256 _RoleId, address _accountAddress) public
-    // returns (bool success)
-    // {
+    function linkage (uint256 _RoleId, address _accountAddress) public 
+    returns (bool)
+    {
+        if (isassigned(_accountAddress) != true) revert ("Address does not have permissions yet");
+             if (hasRole(_accountAddress,_RoleId) != true ) revert ("Address is not a bearer of the Role");
+                struct_linking[_accountAddress].ridentifier.push(_RoleId);             
+                return true;
+                //emit ()
+    }
         
-    //    if (isassigned(_accountAddress) != true) revert ("Address does not have permissions yet!");
         
-    //    if (hasRole(_accountAddress,_RoleId) != true ) revert ("Address does not belong to this RoleId");
-        
-    //       simplestruct.permission2roleid[_accountAddress] = _RoleId;
-    //       simplestruct.pointertolastitem = acct2roleid.push(_RoleId) ;
-           
-           //emit ()
-    //return true;
-    //}
+    //  This function retrieves the RoleID for an address
+    //  The address must have permissinos assigned to itself
+    //  The address must have a roleID asssigned to itself
   
-}
+  
+   function retrievetlength (address _accountAddress) public returns (uint256 ) {
+       return struct_linking[_accountAddress].ridentifier.length;
+   }
+  
+   function retrieveroleID (address _accountAddress) external returns (uint256 ) {
+     uint256 i;
+     //if (_accountAddress != 0x0000000000000000000000000000000000000000 ) revert ("No roleId is associated to this address");
+     for (i == 0 ; i <= retrievetlength (_accountAddress) ; ++i) {
+        return struct_linking[_accountAddress].ridentifier[i];
+     }  
+    }
+  
+}   
+
+  
+  
