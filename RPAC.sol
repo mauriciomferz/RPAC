@@ -260,7 +260,7 @@ contract Permissions {
         }
 }   
      
-ontract Addresses2Roles is Roles,Permissions {
+Contract Addresses2Roles is Roles,Permissions {
     
     // This struct only has only one Type
     // ridentfier is an array of integeres related to RoleId
@@ -306,7 +306,7 @@ ontract Addresses2Roles is Roles,Permissions {
   
    function retrieveroleID (address _accountAddress) external returns (uint256 ) {
      uint256 i;
-     //if (_accountAddress != 0x0000000000000000000000000000000000000000 ) revert ("No roleId is associated to this address");
+     if (_accountAddress != 0x0000000000000000000000000000000000000000 ) revert ("No roleId is associated to this address");
      for (i == 0 ; i <= retrievetlength (_accountAddress) ; ++i) {
         return struct_linking[_accountAddress].ridentifier[i];
      }  
