@@ -248,19 +248,19 @@ contract Permissions {
     }
 
  function deletePermission (address _accountAddress) external returns(bool) 
-        {
-            if(!isassigned(_accountAddress)) revert ();
-            uint256 rowToDelete = accounts2permission[_accountAddress].permissionpointerlist;
-            address keyToMove = permissionlist[permissionlist.length-1];
-            permissionlist[rowToDelete] = keyToMove;
-            accounts2permission[keyToMove].permissionpointerlist = rowToDelete;
-            permissionlist.length--;
-            emit PermissionDelete ( _accountAddress);
-            return true;
-        }
+    {
+        if(!isassigned(_accountAddress)) revert ();
+        uint256 rowToDelete = accounts2permission[_accountAddress].permissionpointerlist;
+        address keyToMove = permissionlist[permissionlist.length-1];
+        permissionlist[rowToDelete] = keyToMove;
+        accounts2permission[keyToMove].permissionpointerlist = rowToDelete;
+        permissionlist.length--;
+        emit PermissionDelete ( _accountAddress);
+        return true;
+    }
 }   
-     
-Contract Addresses2Roles is Roles,Permissions {
+
+contract Addresses2Roles is Roles,Permissions {
     
     // This struct only has only one Type
     // ridentfier is an array of integeres related to RoleId
@@ -304,15 +304,16 @@ Contract Addresses2Roles is Roles,Permissions {
        return struct_linking[_accountAddress].ridentifier.length;
    }
   
-   function retrieveroleID (address _accountAddress) external returns (uint256 ) {
+   function retrieveroleID (address _accountAddress) external returns (uint256 [] memory) {
      uint256 i;
-     if (_accountAddress != 0x0000000000000000000000000000000000000000 ) revert ("No roleId is associated to this address");
-     for (i == 0 ; i <= retrievetlength (_accountAddress) ; ++i) {
-        return struct_linking[_accountAddress].ridentifier[i];
-     }  
-    }
-  
-}   
+     uint256 [] memory mapped_roles;
+     if (_accountAddress !=  address(0x0) ) revert ("No roleId is associated to this address");
+         if (retrievetlength(_accountAddress) == 0) revert ("No roleId is associated to this address");
+             for (i == 0 ; i <= retrievetlength(_accountAddress); ++i) {
+                mapped_roles[i] = struct_linking[_accountAddress].ridentifier[i];
+                return mapped_roles;
+        }
+   }    
+ }
 
-  
-  
+     
