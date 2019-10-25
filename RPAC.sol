@@ -304,9 +304,8 @@ contract Addresses2Roles is Roles,Permissions {
        return struct_linking[_accountAddress].ridentifier.length;
    }
   
-   function retrieveroleID (address _accountAddress) external returns (uint256 [] memory) {
-     uint256 i;
-     uint256 [] memory mapped_roles;
+   function retrieveroleID (address _accountAddress) external returns (uint256 [] memory mapped_roles) {
+     uint256 i;     
      if (_accountAddress !=  address(0x0) ) revert ("No roleId is associated to this address");
          if (retrievetlength(_accountAddress) == 0) revert ("No roleId is associated to this address");
              for (i == 0 ; i <= retrievetlength(_accountAddress); ++i) {
