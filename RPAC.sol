@@ -260,13 +260,30 @@ contract Permissions {
     }
 }   
 
-ontract Addresses2Roles is Roles,Permissions {
+ function retrieveaccountpermissions (address _accountAddress) public view returns (string[] memory, bool)    {
+        if(!isassigned(_accountAddress)) revert ();
+        return (accounts2permission[_accountAddress].permission_name, true);
+    }
+
+ function deletePermission (address _accountAddress) external returns(bool) 
+    {
+        if(!isassigned(_accountAddress)) revert ();
+        uint256 rowToDelete = accounts2permission[_accountAddress].permissionpointerlist;
+        address keyToMove = permissionlist[permissionlist.length-1];
+        permissionlist[rowToDelete] = keyToMove;
+        accounts2permission[keyToMove].permissionpointerlist = rowToDelete;
+        permissionlist.length--;
+        emit PermissionDelete ( _accountAddress);
+        return true;
+    }
+}   
+
+contract Addresses2Roles is Roles,Permissions {
     
     // This struct only has only one Type
     // ridentfier is an array of integeres related to RoleId
     // it allows to assign one or more rolesId to a single adddress 
     // e.g address 0x0A may have one or more roles -> roleId = 1 , roleId= 2, roleId = 3
-    
     
     struct Linking {
             uint256[] ridentifier;
@@ -275,7 +292,6 @@ ontract Addresses2Roles is Roles,Permissions {
     // Public array of Struct 
     mapping (address => Linking) struct_linking;
     
-
     // _Roleid this arguments takes the RoleId created in contract Roles
     // _Accountaddrress this argument takes an address
     // verify if the account isassigned from contract Permissions
@@ -285,34 +301,34 @@ ontract Addresses2Roles is Roles,Permissions {
     
     function linkage (uint256 _RoleId, address _accountAddress) public 
     returns (bool) {
-        if (isassigned(_accountAddress) != true) revert ("Address does not have permissions yet");
-             if (hasRole(_accountAddress,_RoleId) != true ) revert ("Address is not a bearer of the Role");
-                 struct_linking[_accountAddress].ridentifier.push(_RoleId);
-                 uint256 index =  struct_linking[_accountAddress].ridentifier.length;
-                 struct_linking[_accountAddress].ridentifier[index - 1] = _RoleId;
-                 
-                //emit ()
-    return true;
- 
+        if (isassigned(_accountAddress) == true)  revert ("Address does not have permissions yet");
+             require (hasRole(_accountAddress,_RoleId) == true ,  "Address is not a bearer of the Role");
+             struct_linking[_accountAddress].ridentifier.push(_RoleId);
+             uint256 index =  struct_linking[_accountAddress].ridentifier.length;
+             struct_linking[_accountAddress].ridentifier[index - 1] = _RoleId;
+             return true;
+            //emit ()
+             
     }
-        
-        
+    
     //  This function retrieves the RoleID for an address
     //  The address must have permissinos assigned to itself
     //  The address must have a roleID asssigned to itself
   
-  
-   function retrievetlength (address _accountAddress) public returns (uint256 ) {
+   function retrievetlength (address _accountAddress) public  view returns (uint256 ) {
        return struct_linking[_accountAddress].ridentifier.length;
    }
   
-   function retrieveroleID (address _accountAddress) external returns (uint256 [] memory mapped_roles) {
+   function retrieveroleID (address _accountAddress) external view returns (uint256 [] memory ) {
      uint256 i;
-       if ( _accountAddress != address(0x0)) revert ("Address is 0x0");
-         if ( retrievetlength(_accountAddress) > 0 ) revert ("Return length is 0");
-            for (i == 0 ; i <= retrievetlength(_accountAddress) - 1 ; ++i) {
-             mapped_roles[i] = struct_linking[_accountAddress].ridentifier[i];
-      }
+
+      if (_accountAddress != address(0x0)) revert ("Address is 0x0");
+           require( j > 0, "Return length is 0");
+             uint256 j = retrievetlength(_accountAddress);
+             uint256 [] memory mapped_roles = new uint256[](j);
+             for (i == 0 ; i <= j - 1 ; ++i) {
+                mapped_roles[i] = struct_linking[_accountAddress].ridentifier[i];
+              }
     return mapped_roles;
     }
- }  
+  }
