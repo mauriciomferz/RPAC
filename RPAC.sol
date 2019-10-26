@@ -260,7 +260,7 @@ contract Permissions {
     }
 }   
 
-contract Addresses2Roles is Roles,Permissions {
+ontract Addresses2Roles is Roles,Permissions {
     
     // This struct only has only one Type
     // ridentfier is an array of integeres related to RoleId
@@ -272,7 +272,7 @@ contract Addresses2Roles is Roles,Permissions {
             uint256[] ridentifier;
     }
     
-    // Public array of Struct Acct2RoleID;
+    // Public array of Struct 
     mapping (address => Linking) struct_linking;
     
 
@@ -287,7 +287,10 @@ contract Addresses2Roles is Roles,Permissions {
     returns (bool) {
         if (isassigned(_accountAddress) != true) revert ("Address does not have permissions yet");
              if (hasRole(_accountAddress,_RoleId) != true ) revert ("Address is not a bearer of the Role");
-                struct_linking[_accountAddress].ridentifier.push(_RoleId);
+                 struct_linking[_accountAddress].ridentifier.push(_RoleId);
+                 uint256 index =  struct_linking[_accountAddress].ridentifier.length;
+                 struct_linking[_accountAddress].ridentifier[index - 1] = _RoleId;
+                 
                 //emit ()
     return true;
  
@@ -305,11 +308,11 @@ contract Addresses2Roles is Roles,Permissions {
   
    function retrieveroleID (address _accountAddress) external returns (uint256 [] memory mapped_roles) {
      uint256 i;
-     if (_accountAddress !=  address(0x0) ) revert ("No roleId is associated to this address");
-         if (retrievetlength(_accountAddress) == 0) revert ("No roleId is associated to this address");
-             for (i == 0 ; i <= retrievetlength(_accountAddress) -1 ; ++i) {
-                mapped_roles[i] = struct_linking[_accountAddress].ridentifier[i];
-            }
+       if (_accountAddress != address(0x0) ) revert ("Address is 0x0");
+         if (retrievetlength(_accountAddress) !=0) revert ("Return length is 0");
+            for (i == 0 ; i <= retrievetlength(_accountAddress) ; ++i) {
+             mapped_roles[i] = struct_linking[_accountAddress].ridentifier[i];
+      }
     return mapped_roles;
     }
  }  
