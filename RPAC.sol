@@ -310,7 +310,7 @@ ontract Addresses2Roles is Roles,Permissions {
      uint256 i;
        if ( _accountAddress != address(0x0)) revert ("Address is 0x0");
          if ( retrievetlength(_accountAddress) !=0 ) revert ("Return length is 0");
-            for (i == 0 ; i <= retrievetlength(_accountAddress) ; ++i) {
+            for (i == 0 ; i <= retrievetlength(_accountAddress) - 1 ; ++i) {
              mapped_roles[i] = struct_linking[_accountAddress].ridentifier[i];
       }
     return mapped_roles;
