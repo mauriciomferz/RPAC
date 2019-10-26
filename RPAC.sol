@@ -301,14 +301,15 @@ contract Addresses2Roles is Roles,Permissions {
     
     function linkage (uint256 _RoleId, address _accountAddress) public 
     returns (bool) {
-        if (isassigned(_accountAddress) == true)  revert ("Address does not have permissions yet");
-             require (hasRole(_accountAddress,_RoleId) == true ,  "Address is not a bearer of the Role");
-             struct_linking[_accountAddress].ridentifier.push(_RoleId);
-             uint256 index =  struct_linking[_accountAddress].ridentifier.length;
-             struct_linking[_accountAddress].ridentifier[index - 1] = _RoleId;
-             return true;
-            //emit ()
-             
+        bool checkpoint;
+        checkpoint = isassigned(_accountAddress);
+            require ( checkpoint  , "Address does not have permissions yet");
+            require ( hasRole (_accountAddress,_RoleId) , "Address is not a bearer of the Role");
+                 struct_linking[_accountAddress].ridentifier.push(_RoleId);
+                 uint256 index =  struct_linking[_accountAddress].ridentifier.length;
+                 struct_linking[_accountAddress].ridentifier[index - 1] = _RoleId;
+                 return true;
+                 //emit ()             
     }
     
     //  This function retrieves the RoleID for an address
@@ -321,14 +322,13 @@ contract Addresses2Roles is Roles,Permissions {
   
    function retrieveroleID (address _accountAddress) external view returns (uint256 [] memory ) {
      uint256 i;
-
-      if (_accountAddress != address(0x0)) revert ("Address is 0x0");
-           require( j > 0, "Return length is 0");
-             uint256 j = retrievetlength(_accountAddress);
-             uint256 [] memory mapped_roles = new uint256[](j);
-             for (i == 0 ; i <= j - 1 ; ++i) {
-                mapped_roles[i] = struct_linking[_accountAddress].ridentifier[i];
-              }
+           require ( _accountAddress != address(0x0) , "Address is 0x0");
+           uint256 j = retrievetlength(_accountAddress);
+           uint256 [] memory mapped_roles = new uint256[](j);
+           require( retrievetlength (_accountAddress) > 0, "Return length is 0");
+               for (i == 0 ; i <= j - 1 ; ++i) {
+                  mapped_roles[i] = struct_linking[_accountAddress].ridentifier[i];
+                }
     return mapped_roles;
     }
-  }
+  } 
