@@ -241,41 +241,23 @@ contract Permissions {
         return true;
     }
   
+ function deletePermission (address _accountAddress) public returns(bool) {
+        if(!isassigned(_accountAddress)) revert ();
+            uint256 rowToDelete = accounts2permission[_accountAddress].permissionpointerlist;
+            address keyToMove = permissionlist[permissionlist.length-1];
+            permissionlist[rowToDelete] = keyToMove;
+            accounts2permission[keyToMove].permissionpointerlist = rowToDelete;
+            permissionlist.length--;
+            emit PermissionDelete ( _accountAddress);
+            return true;
+   }
+
+ 
+  function retrieveaccountpermissions (address _accountAddress) public view returns (string[] memory, bool){
+        if(!isassigned(_accountAddress)) revert ();
+        return (accounts2permission[_accountAddress].permission_name, true);
+    }
     
- function retrieveaccountpermissions (address _accountAddress) public view returns (string[] memory, bool)    {
-        if(!isassigned(_accountAddress)) revert ();
-        return (accounts2permission[_accountAddress].permission_name, true);
-    }
-
- function deletePermission (address _accountAddress) external returns(bool) 
-    {
-        if(!isassigned(_accountAddress)) revert ();
-        uint256 rowToDelete = accounts2permission[_accountAddress].permissionpointerlist;
-        address keyToMove = permissionlist[permissionlist.length-1];
-        permissionlist[rowToDelete] = keyToMove;
-        accounts2permission[keyToMove].permissionpointerlist = rowToDelete;
-        permissionlist.length--;
-        emit PermissionDelete ( _accountAddress);
-        return true;
-    }
-}   
-
- function retrieveaccountpermissions (address _accountAddress) public view returns (string[] memory, bool)    {
-        if(!isassigned(_accountAddress)) revert ();
-        return (accounts2permission[_accountAddress].permission_name, true);
-    }
-
- function deletePermission (address _accountAddress) external returns(bool) 
-    {
-        if(!isassigned(_accountAddress)) revert ();
-        uint256 rowToDelete = accounts2permission[_accountAddress].permissionpointerlist;
-        address keyToMove = permissionlist[permissionlist.length-1];
-        permissionlist[rowToDelete] = keyToMove;
-        accounts2permission[keyToMove].permissionpointerlist = rowToDelete;
-        permissionlist.length--;
-        emit PermissionDelete ( _accountAddress);
-        return true;
-    }
 }   
 
 contract Addresses2Roles is Roles,Permissions {
