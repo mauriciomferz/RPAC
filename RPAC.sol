@@ -220,7 +220,19 @@ contract Permissions {
     {
         return permissionlist.length;
     }
-
+    
+ function retrieveaccountpermissions (address _accountAddress) public view returns (string[] memory, bool)
+    {
+   if(!isassigned(_accountAddress)) revert ();
+        return (accounts2permission[_accountAddress].permission_name, true);
+    }
+ 
+ function retrieveaccountpermissions (address _accountAddress) public view returns (string[] memory, bool)
+   {
+        if(!isassigned(_accountAddress)) revert ();
+        return (accounts2permission[_accountAddress].permission_name, true);
+   }   
+ 
  function newPermissionset (address _accountAddress, string [] memory _permission_name) public returns(bool)
     {
         if(isassigned(_accountAddress)) revert ("address alreaddy exist");
@@ -250,14 +262,7 @@ contract Permissions {
             permissionlist.length--;
             emit PermissionDelete ( _accountAddress);
             return true;
-   }
-
- 
-  function retrieveaccountpermissions (address _accountAddress) public view returns (string[] memory, bool){
-        if(!isassigned(_accountAddress)) revert ();
-        return (accounts2permission[_accountAddress].permission_name, true);
-    }
-    
+   } 
 }   
 
 contract Addresses2Roles is Roles,Permissions {
