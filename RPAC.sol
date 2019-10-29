@@ -295,6 +295,7 @@ contract Addresses2Roles is Roles,Permissions {
                  struct_linking[_accountAddress].ridentifier.push(_RoleId);
                  uint256 index =  struct_linking[_accountAddress].ridentifier.length;
                  struct_linking[_accountAddress].ridentifier[index - 1] = _RoleId;
+                  struct_linking[_accountAddress].ridentifier.pop;
                  return true;
                  //emit ()             
     }
