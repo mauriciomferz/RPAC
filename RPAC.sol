@@ -220,13 +220,8 @@ contract Permissions {
     {
         return permissionlist.length;
     }
-    
- function retrieveaccountpermissions (address _accountAddress) public view returns (string[] memory, bool)
-    {
-   if(!isassigned(_accountAddress)) revert ();
-        return (accounts2permission[_accountAddress].permission_name, true);
-    }
- 
+   
+  
  function retrieveaccountpermissions (address _accountAddress) public view returns (string[] memory, bool)
    {
         if(!isassigned(_accountAddress)) revert ();
@@ -295,7 +290,7 @@ contract Addresses2Roles is Roles,Permissions {
                  struct_linking[_accountAddress].ridentifier.push(_RoleId);
                  uint256 index =  struct_linking[_accountAddress].ridentifier.length;
                  struct_linking[_accountAddress].ridentifier[index - 1] = _RoleId;
-                  struct_linking[_accountAddress].ridentifier.pop;
+                 struct_linking[_accountAddress].ridentifier.pop;
                  return true;
                  //emit ()             
     }
